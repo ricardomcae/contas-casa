@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contas da Casa</title>
+
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Contas da Casa" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:#fff; --ink:#1f2937; --muted:#667085; --line:#e5e7eb;
+      --accent:#2563eb; --accent2:#1d4ed8; --ok:#047857; --danger:#b91c1c;
+      --soft:#f9fafb; --blueSoft:#eef5f7; --blueLine:#d5e5ea; --blueResult:#e2eef2; --blueResultLine:#b9d1da;
+      --pinkSoft:#fbf1f4; --pinkLine:#efd6dd; --pinkResult:#f7e4ea; --pinkResultLine:#e4bcc8;
+      --houseSoft:#eef4ff; --houseLine:#cdddfd; --shadow:0 10px 30px rgba(17,24,39,.08); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{padding:26px 18px 6px;max-width:1180px;margin:auto}
+    h1{margin:0 0 8px;font-size:clamp(1.45rem,2.2vw,2rem);letter-spacing:-.02em;font-weight:800}
+    h2{margin:0 0 10px;font-size:1.25rem} h3{margin:0 0 12px;font-size:1.05rem} p{line-height:1.55}.lead{color:var(--muted);margin:0;max-width:1180px}
+    main{max-width:1180px;margin:0 auto;padding:18px;display:grid;gap:18px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .subcard{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:14px}
+    .houseCard{background:var(--houseSoft);border-color:var(--houseLine)}.ricardoCard{background:var(--blueSoft);border-color:var(--blueLine)}.sophieCard{background:var(--pinkSoft);border-color:var(--pinkLine)}
+    .ricardoResult{background:var(--blueResult);border-color:var(--blueResultLine)}.sophieResult{background:var(--pinkResult);border-color:var(--pinkResultLine)}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    @media(max-width:900px){.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.results{grid-template-columns:1fr!important}.yearBar{grid-template-columns:44px 1fr 44px!important}}
+    label{font-weight:650;font-size:.92rem;display:block;margin-bottom:6px}
+    input,select,button{font:inherit;border-radius:12px;border:1px solid #d0d5dd;padding:10px 12px;background:#fff;color:var(--ink);width:100%}
+    input[type="checkbox"]{width:auto;transform:scale(1.15);margin-right:8px} input:disabled,input[readonly],select:disabled{background:#f3f4f6;color:#667085}
+    button{cursor:pointer;border:none;background:var(--accent);color:#fff;font-weight:750;transition:.15s ease;box-shadow:0 6px 16px rgba(37,99,235,.2)}
+    button:hover{background:var(--accent2);transform:translateY(-1px)} button:disabled{opacity:.45;cursor:not-allowed;transform:none!important} button.secondary{background:#111827} button.ghost{background:#eef2ff;color:#1e40af;box-shadow:none} button.danger{background:var(--danger)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1 1 160px}.row button{flex:0 0 auto;width:auto}.hidden{display:none!important}.cloudActions{display:flex;gap:10px;align-items:center;justify-content:flex-end}.cloudActions button{width:auto;min-width:190px;flex:0 0 auto;padding-left:14px;padding-right:14px;white-space:normal;line-height:1.2}
+    .muted{color:var(--muted);font-size:.92rem}.small{font-size:.84rem}.ok{color:var(--ok)}.dangerText{color:var(--danger)}
+    .yearBar{display:grid;grid-template-columns:52px 1fr 52px;gap:12px;align-items:center}.yearTitle{text-align:center;font-weight:850;font-size:1.25rem;cursor:pointer;border-radius:12px;padding:8px}.yearTitle:hover{background:#eef2ff;color:#1e40af}.navBtn{height:44px;border-radius:999px;background:#eef2ff;color:#1e40af;box-shadow:none;font-size:1.25rem}
+    .month-list{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;margin-top:12px}.month-tab{white-space:nowrap;border:1px solid var(--line);background:white;color:var(--ink);box-shadow:none;padding:9px 6px;font-size:.9rem}.month-tab.active{background:#eaf2ff;color:#174ea6;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.10)}.month-tab.closed:after{content:" ✓";color:#047857;font-weight:900}
+    .results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.result{border:1px solid var(--line);border-radius:16px;padding:14px}.result strong{display:block;font-size:1.6rem;margin-top:6px}.resultHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .metricBox{border:2px solid transparent;border-radius:14px;padding:10px;background:#fff;transition:.15s ease}.metricBox.active{border-color:var(--accent);background:#f5f9ff;box-shadow:0 8px 22px rgba(37,99,235,.14),0 0 0 4px rgba(37,99,235,.10)}
+    details summary{cursor:pointer;font-weight:750}.configDetails,.helpDetails{font-size:.84rem}.configDetails summary,.helpDetails summary{font-size:.9rem}.configDetails h3,.helpDetails h3{font-size:.9rem}.configDetails label{font-size:.8rem}.configDetails input,.configDetails button{font-size:.82rem;padding:8px 10px}.configDetails .muted,.configDetails .small,.helpDetails .muted,.helpDetails .small{font-size:.8rem}.configDetails .subcard{padding:12px}.helpDetails p{font-size:.8rem;margin:.55rem 0}.status{min-height:24px;white-space:normal;overflow-wrap:anywhere;line-height:1.35}.divider{height:1px;background:var(--line);margin:12px 0}.checkline{display:flex;align-items:center;gap:6px;margin-top:6px}.checkline label{display:inline;margin:0;font-weight:550}
+    .inputError{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(185,28,28,.12)}.lockedNote{margin-top:8px;color:#475467;font-weight:650}
+    .personHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}.personTag{font-size:.78rem;color:#475467;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-weight:700}
+    .withSuffix{position:relative}.withSuffix input{padding-right:42px}.suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:750;pointer-events:none}
+    .allocation{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;display:grid;gap:10px}.allocationRow{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:baseline;font-size:.95rem}.allocationRow span:last-child{font-weight:800;text-align:right}.allocationRow.total{border-top:1px solid var(--line);padding-top:10px;font-size:.95rem}.closeWrap{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}.closeWrap button{width:auto;min-width:150px;padding:9px 16px}.subtleBtn{background:transparent;color:#667085;box-shadow:none;border:1px solid var(--line);min-width:110px}.subtleBtn:hover{background:#f3f4f6;color:#374151}.closeBtn{background:#b45309;color:#fff}.closeBtn:hover{background:#92400e}.reopenBtn{background:#eef2ff;color:#1e40af;box-shadow:none}.reopenBtn:hover{background:#dbeafe;color:#1d4ed8}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Contas da Casa</h1>
+  <p class="lead">Cálculo mensal das transferências individuais e do valor reservado para a casa.</p>
+</header>
+<main>
+  <section class="card">
+    <div class="yearBar">
+      <button class="navBtn" id="prevYearBtn" title="Ano anterior">‹</button>
+      <div class="yearTitle" id="yearTitle">2026</div>
+      <button class="navBtn" id="nextYearBtn" title="Ano seguinte">›</button>
+    </div>
+    <div class="month-list" id="monthTabs"></div>
+  </section>
+
+  <section class="card" id="monthCard">
+    <div class="grid">
+      <div class="col-4">
+        <div class="subcard houseCard">
+          <div class="personHeader"><h3>Casa</h3></div>
+          <label for="houseNeed">Valor estipulado para a casa</label>
+          <div class="withSuffix"><input id="houseNeed" class="moneyInput" inputmode="decimal" placeholder="0,00" /><span class="suffix">€</span></div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="subcard ricardoCard">
+          <div class="personHeader"><h3>Ricardo</h3><span class="personTag" id="ricTotalTag">Total 0,00 €</span></div>
+          <div class="grid">
+            <div class="col-6"><label for="ricSalary">Ordenado</label><div class="withSuffix"><input id="ricSalary" class="moneyInput" inputmode="decimal" placeholder="0,00" /><span class="suffix">€</span></div></div>
+            <div class="col-6"><label for="ricTickets">Tickets</label><div class="withSuffix"><input id="ricTickets" class="moneyInput" inputmode="decimal" placeholder="0,00" /><span class="suffix">€</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="subcard sophieCard">
+          <div class="personHeader"><h3>Sophie</h3><span class="personTag" id="sopTotalTag">Total 0,00 €</span></div>
+          <div class="grid">
+            <div class="col-6"><label for="sopSalary">Ordenado</label><div class="withSuffix"><input id="sopSalary" class="moneyInput" inputmode="decimal" placeholder="0,00" /><span class="suffix">€</span></div></div>
+            <div class="col-6"><label for="sopTickets">Tickets</label><div class="withSuffix"><input id="sopTickets" class="moneyInput" inputmode="decimal" placeholder="0,00" /><span class="suffix">€</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12"><div class="divider"></div></div>
+      <div class="col-4"><label for="mode">Critério de repartição</label><select id="mode"><option value="fixed">Usar referência fixa</option><option value="dynamic">Usar percentagens do rendimento do mês</option></select></div>
+      <div class="col-4"><div class="metricBox" id="dynamicMetric"><label>Percentagens do rendimento</label><div class="muted" id="salaryPercents">Ricardo 0,0% · Sophie 0,0%</div></div></div>
+      <div class="col-4"><div class="metricBox" id="fixedMetric"><label>Referência fixa</label><div class="muted" id="fixedPercents">Ricardo 70,0% · Sophie 30,0%</div></div></div>
+
+      <div class="col-12"><div class="divider"></div></div>
+      <div class="col-12 resultHeader"><h2>Resultado:</h2></div>
+      <div class="col-12 results">
+        <div class="result ricardoResult"><span>Transferir para Ricardo</span><strong id="ricTransfer">0,00 €</strong><span class="muted small" id="ricDetail"></span></div>
+        <div class="result sophieResult"><span>Transferir para Sophie</span><strong id="sopTransfer">0,00 €</strong><span class="muted small" id="sopDetail"></span></div>
+      </div>
+      <div class="col-12"><div class="allocation" id="allocationBox"></div><div class="closeWrap"><button id="resetMonthBtn" class="subtleBtn">Repor mês</button><button id="saveNowBtn" class="reopenBtn">Guardar na nuvem</button><button id="closeMonthBtn" class="closeBtn">Fechar mês</button></div><p id="monthActionMsg" class="muted small" style="text-align:right;margin:.45rem 0 0"></p><p id="validationMsg" class="dangerText small"></p><p id="lockedMsg" class="lockedNote small"></p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <details class="configDetails">
+      <summary>Configurações</summary>
+      <div class="grid" style="margin-top:14px">
+        <div class="col-12 subcard">
+          <div class="grid">
+            <div class="col-12"><h3>Referência fixa</h3></div>
+            <div class="col-3"><p class="muted small" style="margin:.15rem 0 0">Percentagens usadas por omissão quando o mês não usa o rendimento real.</p></div>
+            <div class="col-3"><label for="fixedRicardo">Ricardo</label><div class="withSuffix"><input id="fixedRicardo" class="percentInput" inputmode="decimal" placeholder="70" /><span class="suffix">%</span></div></div>
+            <div class="col-3"><label for="fixedSophie">Sophie</label><div class="withSuffix"><input id="fixedSophie" readonly placeholder="30" /><span class="suffix">%</span></div></div>
+            <div class="col-3"><label>&nbsp;</label><button id="saveFixedBtn" class="ghost">Gravar referência fixa</button></div>
+            <div class="col-12"><span id="fixedStatus" class="muted small"></span></div>
+          </div>
+        </div>
+
+        <div class="col-12 subcard">
+          <div class="grid">
+            <div class="col-12"><h3>GitHub</h3></div>
+            <div class="col-3 cloudSetup"><label for="token">Token GitHub</label><input id="token" type="password" autocomplete="off" placeholder="Token com permissão de Gist" /></div>
+            <div class="col-3 cloudSetup"><label for="password">Palavra-passe de cifra</label><input id="password" type="password" autocomplete="off" placeholder="Não é gravada" /></div>
+            <div class="col-3 cloudSetup"><label for="gistId">ID do Gist</label><input id="gistId" placeholder="ex.: a1b2c3..." /></div>
+            <div class="col-3 cloudSetup"><label>&nbsp;</label><button id="saveCloudConfigBtn">Guardar</button></div>
+            <div id="cloudLockedActions" class="col-12 cloudActions hidden"><button id="resetCloudConfigBtn" class="subtleBtn" type="button">Repor configurações GitHub</button><button id="loadBtn" type="button">Importar da nuvem</button></div>
+            <div class="col-12 cloudSetup"><p class="muted small" style="margin:.25rem 0 0">Na primeira utilização, preenche os três campos e carrega em “Guardar”. Depois disso, os campos ficam guardados neste navegador e esta parametrização fica escondida. Os dados são cifrados neste dispositivo antes de irem para a nuvem. Usa apenas em dispositivos de confiança.</p></div>
+            <div class="col-12 status muted" id="syncStatus"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="card">
+    <details class="helpDetails">
+      <summary>Como funciona</summary>
+      <div class="muted" style="margin-top:12px">
+        <p><strong>Objetivo.</strong> Esta aplicação calcula, mês a mês, quanto deve ser transferido para cada conta individual depois de reservado o valor necessário para a casa.</p>
+        <p><strong>Navegação.</strong> Cada ano mostra 12 meses. A aplicação abre por omissão no mês atual; podes navegar entre 2026 e 2036 pelas setas do ano. Ao clicar no ano, voltas automaticamente ao ano e mês correntes.</p>
+        <p><strong>Rendimentos.</strong> O rendimento de cada pessoa inclui ordenado e tickets. As percentagens do rendimento mostram a proporção real do mês, calculada com base em ordenado + tickets de cada um.</p>
+        <p><strong>Tickets.</strong> Os tickets contam como rendimento e também como contribuição para despesas da casa. Exemplo: se a casa precisa de 2.000,00 € e existem 300,00 € em tickets, o dinheiro a ficar na conta conjunta é 1.700,00 €. Os 300,00 € restantes ficam nos cartões de tickets e também estão reservados para despesas da casa.</p>
+        <p><strong>Critério de repartição.</strong> Em cada mês podes usar a referência fixa, definida nas configurações, ou as percentagens do rendimento desse próprio mês. A secção com borda azul indica qual dos critérios está a ser usado.</p>
+        <p><strong>Referência fixa.</strong> Se o mês estiver aberto e usar referência fixa, o cálculo usa sempre a referência fixa global atual. Se mudares a referência nas configurações, os meses abertos que estejam nesse critério recalculam com a nova referência.</p>
+        <p><strong>Meses em percentagem do rendimento.</strong> Se um mês estiver configurado para usar as percentagens do rendimento, a referência fixa não afeta esse mês. O cálculo depende apenas dos valores de ordenado e tickets desse mês. Se reabrires esse mês e alterares esses valores, as percentagens e o resultado recalculam.</p>
+        <p><strong>Fechar e reabrir meses.</strong> Ao fechar um mês, os campos ficam trancados e o mês aparece com um visto. Se o mês estiver a usar referência fixa, fica guardada uma fotografia da referência fixa usada no momento do fecho. Se reabrires o mês, volta a ser editável e passa a usar as regras atuais, consoante o critério selecionado.</p>
+        <p><strong>Gravação no Gist.</strong> Os dados são guardados apenas quando usas o botão “Guardar na nuvem”. Antes de saírem deste dispositivo, são cifrados localmente com AES-GCM de 256 bits e uma chave derivada da tua palavra-passe por PBKDF2 com 250.000 iterações. O GitHub recebe apenas um bloco cifrado. Na primeira utilização, preenches token GitHub, palavra-passe de cifra e ID do Gist e carregas em “Guardar” na secção GitHub. A partir daí, a app memoriza estes dados no armazenamento local do navegador e bloqueia esses campos. Se precisares de alterar alguma coisa, usa “Repor configurações GitHub”. Isto significa que deves usar a app apenas em dispositivos de confiança, com bloqueio de ecrã ativo, e evitar computadores partilhados. O token GitHub deve ter apenas permissões para Gists; se algum dia for necessário, revoga-o no GitHub e cria outro.</p>
+      </div>
+    </details>
+  </section>
+</main>
+<script>
+const FILE_NAME = 'contas-casa.encrypted.json';
+const START_YEAR = 2026;
+const END_YEAR = 2036;
+const pct = new Intl.NumberFormat('pt-PT', { style:'percent', minimumFractionDigits:1, maximumFractionDigits:1 });
+const $ = id => document.getElementById(id);
+let appState = { version: 6, activeId: null, viewYear: null, settings: { fixedRicardo: 70, fixedSophie: 30 }, months: [] };
+let invalidFields = new Set();
+
+function clampYear(y){ return Math.max(START_YEAR, Math.min(END_YEAR, Number(y) || START_YEAR)); }
+function periodNow(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+function currentYear(){ return clampYear(new Date().getFullYear()); }
+function currentPeriod(){ const p = periodNow(); const y = Number(p.slice(0,4)); return y < START_YEAR || y > END_YEAR ? `${currentYear()}-01` : p; }
+function monthNameFromPeriod(period){ const [y,m] = period.split('-').map(Number); return new Date(y, m-1, 1).toLocaleDateString('pt-PT', { month:'long', year:'numeric' }).replace(/^./, c => c.toUpperCase()); }
+function shortMonthLabel(period){ const m = Number(period.split('-')[1]); const names = ['Jan.','Fev.','Mar.','Abr.','Mai.','Jun.','Jul.','Ago.','Set.','Out.','Nov.','Dez.']; return names[m-1]; }
+function yearlyPeriods(year){ return Array.from({length:12}, (_,i) => `${year}-${String(i+1).padStart(2,'0')}`); }
+function blankMonth(period){ return { id: crypto.randomUUID(), period, name: monthNameFromPeriod(period), closed:false, mode:'fixed', houseNeed:0, ricSalary:0, ricTickets:0, sopSalary:0, sopTickets:0, fixedRicardo:null, fixedSophie:null }; }
+function ensureAllMonths(){
+  const previous = Array.isArray(appState.months) ? appState.months : [];
+  const byPeriod = new Map(previous.map(m => [m.period, m]));
+  const months = [];
+  for(let year = START_YEAR; year <= END_YEAR; year++){
+    yearlyPeriods(year).forEach(period => {
+      const existing = byPeriod.get(period);
+      if(existing){ existing.id = existing.id || crypto.randomUUID(); existing.period = period; existing.name = monthNameFromPeriod(period); existing.mode = existing.mode || 'fixed'; months.push(existing); }
+      else months.push(blankMonth(period));
+    });
+  }
+  appState.months = months;
+}
+function ensureState(){
+  if(!appState.settings) appState.settings = { fixedRicardo: 70, fixedSophie: 30 };
+  appState.settings.fixedRicardo = Number.isFinite(Number(appState.settings.fixedRicardo)) ? Number(appState.settings.fixedRicardo) : 70;
+  appState.settings.fixedSophie = 100 - appState.settings.fixedRicardo;
+  if(Array.isArray(appState.months)){ appState.months.forEach(m => { if(m.closed && (m.fixedRicardo == null || m.fixedSophie == null)){ m.fixedRicardo = appState.settings.fixedRicardo; m.fixedSophie = appState.settings.fixedSophie; } }); }
+  appState.viewYear = clampYear(appState.viewYear || currentYear());
+  ensureAllMonths();
+  if(!appState.activeId || !appState.months.some(m => m.id === appState.activeId)) setActivePeriod(currentPeriod());
+}
+function setActivePeriod(period){ const month = appState.months.find(m => m.period === period) || appState.months.find(m => m.period === `${appState.viewYear}-01`); if(month){ appState.activeId = month.id; appState.viewYear = Number(month.period.slice(0,4)); } }
+function setActiveCurrentMonth(){ setActivePeriod(currentPeriod()); }
+function active(){ return appState.months.find(m => m.id === appState.activeId) || appState.months[0]; }
+function monthsForView(){ return appState.months.filter(m => Number(m.period.slice(0,4)) === appState.viewYear); }
+function monthFields(){ return ['mode','houseNeed','ricSalary','ricTickets','sopSalary','sopTickets']; }
+function setMonthLocked(locked){ monthFields().forEach(id => { $(id).disabled = locked; }); $('closeMonthBtn').textContent = locked ? 'Reabrir mês' : 'Fechar mês'; $('closeMonthBtn').className = locked ? 'reopenBtn' : 'closeBtn'; }
+function fixedShare(m){ const r = m?.closed && m.fixedRicardo != null ? Number(m.fixedRicardo) : appState.settings.fixedRicardo; const sp = m?.closed && m.fixedSophie != null ? Number(m.fixedSophie) : appState.settings.fixedSophie; return { ricardo: r / 100, sophie: sp / 100 }; }
+function hasMonthData(m){ return ['houseNeed','ricSalary','ricTickets','sopSalary','sopTickets'].some(k => Number(m[k] || 0) > 0); }
+
+function parseMoneyText(text){
+  const raw = String(text ?? '').trim().replace(/\s/g,'').replace(/€/g,'');
+  if(raw === '') return { ok:true, value:0 };
+  if(!/^[0-9.,]+$/.test(raw)) return { ok:false, value:0, reason:'Introduz apenas dígitos, vírgula ou ponto.' };
+  const seps = (raw.match(/[,.]/g) || []).length;
+  const lastSep = Math.max(raw.lastIndexOf(','), raw.lastIndexOf('.'));
+  let normalized;
+  if(lastSep === -1){ normalized = raw; }
+  else {
+    const intPart = raw.slice(0,lastSep).replace(/[,.]/g,'');
+    const decPart = raw.slice(lastSep+1).replace(/[,.]/g,'');
+    if(decPart === '') return { ok:false, value:0, reason:'O separador decimal tem de ter dígitos à direita.' };
+    if(seps === 1 && decPart.length === 3 && intPart.length <= 3) normalized = intPart + decPart;
+    else normalized = intPart + '.' + decPart;
+  }
+  if(!/^\d+(\.\d+)?$/.test(normalized)) return { ok:false, value:0, reason:'Valor inválido.' };
+  return { ok:true, value:Number(normalized) };
+}
+function parsePercentText(text){
+  const raw = String(text ?? '').trim().replace(/\s/g,'').replace(/%/g,'');
+  if(raw === '') return { ok:true, value:0 };
+  if(!/^[0-9.,]+$/.test(raw)) return { ok:false, value:0, reason:'Introduz apenas dígitos, vírgula ou ponto.' };
+  const lastSep = Math.max(raw.lastIndexOf(','), raw.lastIndexOf('.'));
+  let normalized;
+  if(lastSep === -1) normalized = raw.replace(/[,.]/g,'');
+  else {
+    const intPart = raw.slice(0,lastSep).replace(/[,.]/g,'');
+    const decPart = raw.slice(lastSep+1).replace(/[,.]/g,'');
+    if(decPart === '') return { ok:false, value:0, reason:'O separador decimal tem de ter dígitos à direita.' };
+    normalized = intPart + '.' + decPart;
+  }
+  if(!/^\d+(\.\d+)?$/.test(normalized)) return { ok:false, value:0, reason:'Percentagem inválida.' };
+  return { ok:true, value:Number(normalized) };
+}
+function parserFor(el){ return el.classList.contains('percentInput') ? parsePercentText : parseMoneyText; }
+function valueOf(id){ const el = $(id); const parsed = parserFor(el)(el.value); return parsed.ok ? parsed.value : 0; }
+function formatNumberParts(v, decimals=2){ const num = Number(v || 0); const fixed = Math.abs(num).toFixed(decimals); let [intPart, decPart] = fixed.split('.'); intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); return (num < 0 ? '-' : '') + intPart + (decimals ? ',' + decPart : ''); }
+function moneyFmt(v){ return formatNumberParts(v, 2) + ' €'; }
+function formatInputMoney(v){ return Number(v || 0) ? formatNumberParts(v, 2) : ''; }
+function formatInputNumber(v){ return Number(v || 0) ? String(Math.round(Number(v)*100)/100).replace('.', ',') : ''; }
+function validateInputs(){
+  invalidFields.clear(); let errors = [];
+  document.querySelectorAll('.moneyInput,.percentInput').forEach(el => {
+    const parsed = parserFor(el)(el.value);
+    el.classList.toggle('inputError', !parsed.ok);
+    if(!parsed.ok){ invalidFields.add(el.id); errors.push(`${el.closest('.col-6,.col-4')?.querySelector('label')?.textContent || el.id}: ${parsed.reason}`); }
+  });
+  $('validationMsg').textContent = errors.length ? errors[0] : '';
+  return errors.length === 0;
+}
+function updateSophieDraft(){ const parsed = parsePercentText($('fixedRicardo').value); $('fixedSophie').value = parsed.ok ? formatInputNumber(Math.max(0, Math.min(100, 100 - parsed.value))) : ''; }
+function calculate(m){
+  const ricTotal = Number(m.ricSalary)+Number(m.ricTickets), sopTotal = Number(m.sopSalary)+Number(m.sopTickets), total = ricTotal+sopTotal;
+  const dynamic = total ? { ricardo: ricTotal / total, sophie: sopTotal / total } : { ricardo: 0, sophie: 0 };
+  const share = m.mode === 'dynamic' && total ? dynamic : fixedShare(m);
+  const ricOwes = Number(m.houseNeed) * share.ricardo;
+  const sopOwes = Number(m.houseNeed) * share.sophie;
+  const ricTransfer = Number(m.ricSalary) - (ricOwes - Number(m.ricTickets));
+  const sopTransfer = Number(m.sopSalary) - (sopOwes - Number(m.sopTickets));
+  const cashToKeep = Number(m.houseNeed) - Number(m.ricTickets) - Number(m.sopTickets);
+  return { dynamic, share, ricOwes, sopOwes, ricTransfer, sopTransfer, cashToKeep, ricTotal, sopTotal };
+}
+function renderTabs(){
+  $('monthTabs').innerHTML = '';
+  monthsForView().forEach(m => { const b = document.createElement('button'); b.className = 'month-tab' + (m.id === appState.activeId ? ' active' : '') + (m.closed ? ' closed' : ''); b.textContent = shortMonthLabel(m.period); b.title = m.name; b.onclick = () => { saveForm(); appState.activeId = m.id; render(); }; $('monthTabs').appendChild(b); });
+}
+function render(){
+  ensureState(); const m = active(); if(Number(m.period.slice(0,4)) !== appState.viewYear) setActivePeriod(`${appState.viewYear}-01`); const month = active();
+  $('yearTitle').textContent = appState.viewYear; $('prevYearBtn').disabled = appState.viewYear <= START_YEAR; $('nextYearBtn').disabled = appState.viewYear >= END_YEAR; renderTabs();
+  $('mode').value = month.mode; setMonthLocked(!!month.closed);
+  $('lockedMsg').textContent = month.closed ? 'Este mês está fechado. Podes consultá-lo, mas os campos ficam trancados para evitar alterações acidentais.' : '';
+  $('monthActionMsg').textContent = '';
+  $('dynamicMetric').classList.toggle('active', month.mode === 'dynamic'); $('fixedMetric').classList.toggle('active', month.mode !== 'dynamic');
+  ['houseNeed','ricSalary','ricTickets','sopSalary','sopTickets'].forEach(id => { if(document.activeElement !== $(id)) $(id).value = formatInputMoney(month[id]); });
+  $('fixedRicardo').value = formatInputNumber(appState.settings.fixedRicardo); $('fixedSophie').value = formatInputNumber(appState.settings.fixedSophie);
+  const c = calculate(month); $('salaryPercents').textContent = `Ricardo ${pct.format(c.dynamic.ricardo || 0)} · Sophie ${pct.format(c.dynamic.sophie || 0)}`;
+  $('fixedPercents').textContent = `Ricardo ${pct.format(appState.settings.fixedRicardo/100)} · Sophie ${pct.format(appState.settings.fixedSophie/100)}`;
+  $('ricTotalTag').textContent = `Total ${moneyFmt(c.ricTotal)}`; $('sopTotalTag').textContent = `Total ${moneyFmt(c.sopTotal)}`;
+  $('ricTransfer').textContent = moneyFmt(c.ricTransfer); $('sopTransfer').textContent = moneyFmt(c.sopTransfer);
+  $('ricTransfer').className = c.ricTransfer < 0 ? 'dangerText' : 'ok'; $('sopTransfer').className = c.sopTransfer < 0 ? 'dangerText' : 'ok';
+  $('ricDetail').textContent = `Quota usada: ${pct.format(c.share.ricardo)} · Contribuição total: ${moneyFmt(c.ricOwes)}`;
+  $('sopDetail').textContent = `Quota usada: ${pct.format(c.share.sophie)} · Contribuição total: ${moneyFmt(c.sopOwes)}`;
+  $('allocationBox').innerHTML = `<div class="allocationRow"><span>Conta conjunta</span><span>${moneyFmt(c.cashToKeep)}</span></div><div class="allocationRow"><span>Cartão tickets Ricardo</span><span>${moneyFmt(Number(month.ricTickets))}</span></div><div class="allocationRow"><span>Cartão tickets Sophie</span><span>${moneyFmt(Number(month.sopTickets))}</span></div><div class="allocationRow total"><span>Total reservado para a casa</span><span>${moneyFmt(Number(month.houseNeed))}</span></div>`;
+  validateInputs(); persistLocal();
+}
+function saveForm(){ const m = active(); if(!m) return; validateInputs(); if(m.closed) return; m.mode = $('mode').value; ['houseNeed','ricSalary','ricTickets','sopSalary','sopTickets'].forEach(id => { if(!invalidFields.has(id)) m[id] = valueOf(id); }); }
+function saveFixedSettings(){ validateInputs(); if(invalidFields.has('fixedRicardo')){ $('fixedStatus').textContent = 'Corrige a percentagem do Ricardo antes de gravar.'; $('fixedStatus').className = 'dangerText small'; return false; } const r = valueOf('fixedRicardo'); if(r < 0 || r > 100){ $('fixedStatus').textContent = 'A percentagem do Ricardo tem de estar entre 0% e 100%.'; $('fixedStatus').className = 'dangerText small'; return false; } appState.settings.fixedRicardo = r; appState.settings.fixedSophie = 100 - r; $('fixedStatus').textContent = 'Referência fixa gravada.'; $('fixedStatus').className = 'ok small'; render(); return true; }
+
+function resetActiveMonth(){
+  const m = active(); if(!m) return;
+  m.closed = false;
+  m.mode = 'fixed';
+  m.houseNeed = 0;
+  m.ricSalary = 0;
+  m.ricTickets = 0;
+  m.sopSalary = 0;
+  m.sopTickets = 0;
+  m.fixedRicardo = null;
+  m.fixedSophie = null;
+  render();
+  $('monthActionMsg').textContent = 'Mês reposto. Os valores foram limpos.';
+}
+function persistLocal(){ localStorage.setItem('contasCasaDraft', JSON.stringify(appState)); }
+
+function persistCloudFields(){
+  localStorage.setItem('contasCasaGistId', $('gistId').value.trim());
+  localStorage.setItem('contasCasaToken', $('token').value.trim());
+  localStorage.setItem('contasCasaPassword', $('password').value);
+}
+function loadSavedCloudFields(){
+  const gistId = localStorage.getItem('contasCasaGistId');
+  const token = localStorage.getItem('contasCasaToken');
+  const password = localStorage.getItem('contasCasaPassword');
+  if(gistId) $('gistId').value = gistId;
+  if(token) $('token').value = token;
+  if(password) $('password').value = password;
+}
+function cloudConfigComplete(){ return Boolean($('gistId').value.trim() && $('token').value.trim() && $('password').value); }
+function setCloudConfigLocked(locked){
+  ['token','password','gistId'].forEach(id => { $(id).disabled = locked; });
+  document.querySelectorAll('.cloudSetup').forEach(el => el.classList.toggle('hidden', locked));
+  $('cloudLockedActions').classList.toggle('hidden', !locked);
+}
+function saveCloudConfig(){
+  try{
+    getCloudFields();
+    persistCloudFields();
+    setCloudConfigLocked(true);
+    syncMsg('Configurações GitHub guardadas neste navegador.', 'ok');
+  }catch(e){
+    syncMsg('Erro ao guardar configurações: ' + e.message, 'dangerText');
+  }
+}
+function resetCloudConfig(){
+  setCloudConfigLocked(false);
+  syncMsg('Configurações GitHub desbloqueadas para edição.', 'muted');
+}
+
+function loadLocal(){ try{ const raw = localStorage.getItem('contasCasaDraft'); if(raw) appState = JSON.parse(raw); }catch{} ensureState(); setActiveCurrentMonth(); }
+
+['mode','houseNeed','ricSalary','ricTickets','sopSalary','sopTickets'].forEach(id => $(id).addEventListener('input', () => { saveForm(); render(); }));
+['houseNeed','ricSalary','ricTickets','sopSalary','sopTickets'].forEach(id => $(id).addEventListener('blur', () => { saveForm(); $(id).value = formatInputMoney(active()[id]); render(); }));
+$('fixedRicardo').addEventListener('input', () => { validateInputs(); updateSophieDraft(); });
+$('saveFixedBtn').onclick = saveFixedSettings;
+$('resetMonthBtn').onclick = resetActiveMonth;
+$('prevYearBtn').onclick = () => { if(appState.viewYear > START_YEAR){ saveForm(); appState.viewYear--; setActivePeriod(`${appState.viewYear}-01`); render(); } };
+$('nextYearBtn').onclick = () => { if(appState.viewYear < END_YEAR){ saveForm(); appState.viewYear++; setActivePeriod(`${appState.viewYear}-01`); render(); } };
+$('yearTitle').onclick = () => { saveForm(); setActiveCurrentMonth(); render(); };
+$('closeMonthBtn').onclick = async () => {
+  const m = active(); if(!m) return;
+  if(m.closed){
+    m.closed = false;
+    render();
+    $('monthActionMsg').textContent = 'Mês reaberto para edição.';
+    syncMsg('Mês reaberto para edição.', 'ok');
+    return;
+  }
+  saveForm();
+  if(invalidFields.size){
+    $('monthActionMsg').textContent = 'Corrige os valores antes de fechar o mês.';
+    syncMsg('Corrige os valores antes de fechar o mês.', 'dangerText');
+    return;
+  }
+  m.fixedRicardo = appState.settings.fixedRicardo;
+  m.fixedSophie = appState.settings.fixedSophie;
+  m.closed = true;
+  render();
+  $('monthActionMsg').textContent = 'Mês fechado. Os campos estão agora trancados.';
+};
+
+async function deriveKey(password, salt){ const enc = new TextEncoder(); const baseKey = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:250000, hash:'SHA-256'}, baseKey, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']); }
+function b64(buf){ return btoa(String.fromCharCode(...new Uint8Array(buf))); }
+function unb64(str){ return Uint8Array.from(atob(str), c => c.charCodeAt(0)); }
+async function encryptData(data, password){ const salt = crypto.getRandomValues(new Uint8Array(16)); const iv = crypto.getRandomValues(new Uint8Array(12)); const key = await deriveKey(password, salt); const plain = new TextEncoder().encode(JSON.stringify(data)); const cipher = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, plain); return JSON.stringify({version:1, app:'contas-casa', alg:'PBKDF2-SHA256+AES-GCM', createdAt:new Date().toISOString(), salt:b64(salt), iv:b64(iv), data:b64(cipher)}, null, 2); }
+async function decryptData(blob, password){ const payload = JSON.parse(blob); const key = await deriveKey(password, unb64(payload.salt)); const plain = await crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(payload.iv)}, key, unb64(payload.data)); return JSON.parse(new TextDecoder().decode(plain)); }
+function syncMsg(t, cls='muted'){ $('syncStatus').className = 'col-12 status ' + cls; $('syncStatus').textContent = t; }
+function cloudFieldsFilled(){ return $('gistId').value.trim() && $('token').value.trim() && $('password').value; }
+function getCloudFields(){ const gistId=$('gistId').value.trim(), token=$('token').value.trim(), pw=$('password').value; if(!gistId||!token||!pw) throw new Error('Preenche token GitHub, palavra-passe de cifra e ID do Gist.'); return { gistId, token, pw }; }
+async function gistRequest(method, gistId, token, body){ const res = await fetch(`https://api.github.com/gists/${gistId}`, { method, headers: { 'Accept':'application/vnd.github+json', 'Authorization':`Bearer ${token}`, 'Content-Type':'application/json' }, body: body ? JSON.stringify(body) : undefined }); if(!res.ok) throw new Error(`${res.status} ${await res.text()}`); return res.json(); }
+async function saveToCloud(successText='Dados guardados na nuvem.'){ 
+  try{ 
+    saveForm(); 
+    if(invalidFields.size) throw new Error('Corrige os valores com separador decimal inválido.'); 
+    const {gistId, token, pw} = getCloudFields(); 
+    persistCloudFields();
+    setCloudConfigLocked(true);
+    syncMsg('A cifrar e a guardar na nuvem...', 'muted'); 
+    const encrypted = await encryptData(appState, pw); 
+    await gistRequest('PATCH', gistId, token, { files: { [FILE_NAME]: { content: encrypted } } }); 
+    syncMsg(successText, 'ok'); 
+    return { ok:true, message:successText };
+  }catch(e){ 
+    const message = 'Erro ao guardar: ' + e.message;
+    syncMsg(message, 'dangerText');
+    return { ok:false, message };
+  } 
+}
+async function loadFromCloud(){ try{ const {gistId, token, pw} = getCloudFields(); persistCloudFields(); setCloudConfigLocked(true); syncMsg('A importar do Gist e a decifrar...', 'muted'); const gist = await gistRequest('GET', gistId, token); const file = gist.files[FILE_NAME] || Object.values(gist.files)[0]; if(!file?.content) throw new Error('Não encontrei o ficheiro cifrado no Gist.'); appState = await decryptData(file.content, pw); ensureState(); setActiveCurrentMonth(); render(); syncMsg('Importado do Gist e decifrado com sucesso.', 'ok'); }catch(e){ syncMsg('Erro ao importar: '+e.message, 'dangerText'); } }
+$('saveNowBtn').onclick = async () => { 
+  $('monthActionMsg').className = 'muted small';
+  $('monthActionMsg').textContent = 'A guardar na nuvem...'; 
+  const result = await saveToCloud('Dados guardados na nuvem.'); 
+  $('monthActionMsg').className = result.ok ? 'ok small' : 'dangerText small';
+  $('monthActionMsg').textContent = result.message; 
+};
+$('loadBtn').onclick = () => loadFromCloud();
+$('saveCloudConfigBtn').onclick = saveCloudConfig;
+$('resetCloudConfigBtn').onclick = resetCloudConfig;
+['gistId','token','password'].forEach(id => $(id).addEventListener('input', persistCloudFields));
+loadSavedCloudFields();
+setCloudConfigLocked(cloudConfigComplete());
+loadLocal(); render();
+</script>
+</body>
+</html>
